@@ -2,7 +2,7 @@ goroutine exercises.
 
 ticker,
 rangechannel,
-queue,
-.
-..
-...
+queue,\n
+.\n
+..\n
+...\n
