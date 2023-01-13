@@ -1,4 +1,8 @@
 goroutine exercises.
 
-
-"# goRoutines" 
+ticker,
+rangechannel,
+queue,
+.
+..
+...
