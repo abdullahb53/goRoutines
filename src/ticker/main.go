@@ -19,7 +19,6 @@ func CheckTick(ticker1 *time.Ticker, ticker2 *time.Ticker) {
 }
 
 func main() {
-	fmt.Println("Ticker")
 
 	ticker_1 := time.NewTicker(500 * time.Millisecond)
 	ticker_2 := time.NewTicker(2000 * time.Millisecond)
