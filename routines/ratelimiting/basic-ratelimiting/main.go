@@ -32,7 +32,7 @@ func handlerRequests(requests <-chan Request) {
 	}()
 
 	for r := range requests {
-		<-quotas
+		<-quotas // will block main for
 		go handler(r)
 	}
 }
@@ -43,6 +43,6 @@ func main() {
 	go handlerRequests(requests)
 
 	for {
-		requests <- 1
+		requests <- 1 // blocked
 	}
 }
