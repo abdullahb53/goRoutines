@@ -23,7 +23,6 @@ func main() {
 			if err != nil {
 				fmt.Println("Accept err:", err)
 				break
-				continue
 
 			}
 
