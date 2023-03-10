@@ -10,6 +10,9 @@ import (
 type session struct {
 	conn net.Conn
 }
+type connRem struct {
+	pid *actor.PID
+}
 
 type connAdd struct {
 	pid  *actor.PID
@@ -49,6 +52,10 @@ func (s *session) readLoop(c *actor.Context) {
 		msg := buf[:n]
 		c.Send(c.PID(), msg)
 	}
+
+	// Loop is done
+	c.Send(c.Parent(), &connRem{pid: c.PID()})
+
 }
 
 type server struct {
@@ -80,8 +87,11 @@ func (s *server) Receive(c *actor.Context) {
 	case actor.Stopped:
 		_ = msg
 	case *connAdd:
-		log.Println("added new conn to my map", msg.conn.RemoteAddr())
+		log.Println("added new conn to my map", msg.conn.RemoteAddr(), "pid:", msg.pid)
 		s.sessions[msg.pid] = msg.conn
+	case *connRem:
+		log.Println("Removed connection from my map.", msg.pid)
+		delete(s.sessions, msg.pid)
 	}
 }
 
