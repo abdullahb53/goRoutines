@@ -16,7 +16,7 @@ func (q *Queue) Enqueue(item string) {
 	}
 
 	q.data <- item
-	fmt.Println("Coming from main: ", item)
+	fmt.Println("-> ", item)
 }
 
 func (q *Queue) Dequeue() string {
@@ -27,26 +27,11 @@ func main() {
 
 	myQueue := &Queue{data: make(chan string, QUEUE_SIZE)}
 
-	myQueue.Enqueue("H")
-	myQueue.Enqueue("e")
-	myQueue.Enqueue("l")
-	myQueue.Enqueue("l")
-	myQueue.Enqueue("o")
-	myQueue.Enqueue("!")
-	myQueue.Enqueue(" ")
-	myQueue.Enqueue("M")
-	myQueue.Enqueue("y")
-	myQueue.Enqueue(" ")
-	myQueue.Enqueue("f")
-	myQueue.Enqueue("r")
-	myQueue.Enqueue("i")
-	myQueue.Enqueue("e")
-	myQueue.Enqueue("n")
-	myQueue.Enqueue("d")
-	myQueue.Enqueue("s")
-	myQueue.Enqueue(".")
-
-	fmt.Print("\nremainder that in queue: |``|``|.. -> \"")
+	msg := "Hello My friends!"
+	// H,e,l,l,o, ,M,y,...
+	for _, val := range msg {
+		myQueue.Enqueue(string(val))
+	}
 
 breakthere:
 	for {
@@ -57,7 +42,6 @@ breakthere:
 			}
 			fmt.Print(item)
 		default:
-			fmt.Print("\"")
 			fmt.Println("\nEnd of the queue..")
 			break breakthere
 		}
