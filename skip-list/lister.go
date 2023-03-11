@@ -34,6 +34,7 @@ func New(size int) *lister {
 func NewSkipList(size int) skiplist.SkipList {
 	// Create a new skiplist data structre.
 	s := skiplist.New()
+
 	for i := 0; i < size; i++ {
 		s.Insert(Element(i))
 	}
@@ -50,8 +51,4 @@ func (l lister) Search(k int) int {
 	}
 
 	return -1
-}
-
-func main() {
-
 }
