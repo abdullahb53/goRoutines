@@ -5,23 +5,27 @@ import (
 	"time"
 )
 
-func worker(id int, jobs <-chan int, results chan<- int) {
+const (
+	workers = 8
+	jobs    = 10000000
+)
+
+func worker(id int, jobsChannel <-chan int, resultsChannel chan<- int) {
 	// When our worker is created by main function, we be able to collect our jobs.
-	for i := range jobs {
+	for i := range jobsChannel {
 		// fmt.Println("worker:", id, "Finished job..:", i)
-		results <- i
+		resultsChannel <- i
 	}
 }
 
 func main() {
-	const Workers = 8
-	const _JOBS = 10000000
-	jobs := make(chan int, _JOBS)
-	results := make(chan int, _JOBS)
+
+	jobsChannel := make(chan int, jobs)
+	resultsChannel := make(chan int, jobs)
 
 	// Creating our workers that these are 5
-	for w := 1; w <= Workers; w++ {
-		go worker(w, jobs, results)
+	for w := 1; w <= workers; w++ {
+		go worker(w, jobsChannel, resultsChannel)
 	}
 
 	// Start timer after routines loaded.
@@ -29,8 +33,8 @@ func main() {
 
 	// Sending jobs to 'jobs channel'.
 	go func() {
-		for j := 1; j <= _JOBS; j++ {
-			jobs <- j + 331
+		for j := 1; j <= jobs; j++ {
+			jobsChannel <- j + 331
 		}
 	}()
 
@@ -40,10 +44,10 @@ func main() {
 break_there:
 	for {
 		select {
-		case <-results:
+		case <-resultsChannel:
 			i++
 
-			if i >= _JOBS {
+			if i >= jobs {
 				break break_there
 			}
 		}
