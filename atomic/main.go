@@ -6,8 +6,10 @@ import (
 	"sync/atomic"
 )
 
-var k int = 5
-var howManyTimesIterate int = 2000
+var (
+	k                   int = 5
+	howManyTimesIterate int = 2000
+)
 
 func IterFunc(wg *sync.WaitGroup, ops *uint64) {
 	for i := 0; i < howManyTimesIterate; i++ {
