@@ -5,8 +5,10 @@ import (
 	"testing"
 )
 
-var my_list = New(2000000)
-var skip_list = NewSkipList(2000000)
+var (
+	my_list   = New(2000000)
+	skip_list = NewSkipList(2000000)
+)
 
 func BenchmarkList(b *testing.B) {
 	for i := 0; i < b.N; i++ {
