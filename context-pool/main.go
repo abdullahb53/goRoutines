@@ -61,6 +61,8 @@ func main() {
 	cancel_ctx1()
 	time.Sleep(2 * time.Second)
 	cancel_ctx2()
-	time.Sleep(12 * time.Second)
+
+	ch := make(chan bool)
+	<-ch
 
 }
