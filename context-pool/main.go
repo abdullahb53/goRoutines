@@ -3,66 +3,60 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 )
 
-type ContextPool struct {
-	Type string
-	Port string
-}
+func main() {
+	start := time.Now()
+	var (
+		ctx    = context.WithValue(context.Background(), "foo", "bar")
+		userID = 10
+	)
 
-func BobDoSomething(ctx context.Context) error {
-
-	for {
-		fmt.Println("323!")
-		// do something
-		select {
-		case <-ctx.Done(): // closes when the caller cancels the ctx
-			fmt.Println("Ctx Done.!")
-			return ctx.Err() // has a value on context cancellation
-		default:
-
-			fmt.Println("bob!")
-
-		}
+	val, err := fetchUserData(ctx, userID)
+	if err != nil {
+		log.Fatal(err)
 	}
-
+	fmt.Println("result: ", val)
+	fmt.Println("took: ", time.Since(start))
 }
-func AsheDoSomething(ctx context.Context) error {
+
+type Response struct {
+	value int
+	err   error
+}
+
+func fetchUserData(ctx context.Context, userID int) (int, error) {
+	val := ctx.Value("foo")
+	fmt.Println(val.(string))
+
+	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*200)
+	defer cancel()
+
+	respch := make(chan Response)
+
+	go func() {
+		value, err := fetchThirdPartyStuffWhichCanBeSlow()
+		respch <- Response{
+			value: value,
+			err:   err,
+		}
+
+	}()
 
 	for {
-
 		select {
 		case <-ctx.Done():
-			fmt.Println("Ctx Done.! ASHE")
-			return ctx.Err()
-		default:
-			fmt.Println("ashe!")
+			return 0, fmt.Errorf("fetching data form third party took to long")
+		case resp := <-respch:
+			return resp.value, resp.err
 		}
-
 	}
-
 }
 
-func main() {
+func fetchThirdPartyStuffWhichCanBeSlow() (int, error) {
+	time.Sleep(time.Millisecond * 150)
 
-	ctx1, cancel_ctx1 := context.WithCancel(context.Background())
-	fmt.Println("cancel_ctx1:", cancel_ctx1, " ctx1:", ctx1)
-
-	ctx2, cancel_ctx2 := context.WithCancel(context.Background())
-	fmt.Println("cancel_ctx2:", cancel_ctx1, " ctx2:", ctx2)
-
-	time.Sleep(3 * time.Second)
-
-	go BobDoSomething(ctx1)
-	go AsheDoSomething(ctx2)
-
-	time.Sleep(3 * time.Second)
-	cancel_ctx1()
-	time.Sleep(2 * time.Second)
-	cancel_ctx2()
-
-	ch := make(chan bool)
-	<-ch
-
+	return 111, nil
 }
