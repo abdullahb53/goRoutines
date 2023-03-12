@@ -27,7 +27,7 @@ func main() {
 
 	myQueue := &Queue{data: make(chan string, QUEUE_SIZE)}
 
-	msg := "Hello My friends!"
+	msg := []byte("Hello My friends!")
 	// H,e,l,l,o, ,M,y,...
 	for _, val := range msg {
 		myQueue.Enqueue(string(val))
