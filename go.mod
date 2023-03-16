@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect

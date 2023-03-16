@@ -1,5 +1,7 @@
 github.com/MauriceGit/skiplist v0.0.0-20211105230623-77f5c8d3e145 h1:1yw6O62BReQ+uA1oyk9XaQTvLhcoHWmoQAgXmDFXpIY=
 github.com/MauriceGit/skiplist v0.0.0-20211105230623-77f5c8d3e145/go.mod h1:877WBceefKn14QwVVn4xRFUsHsZb9clICgdeTj4XsUg=
+github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf h1:VSUCKpFV0AfYGslgQSRdBI9HCVp1TCXJmScWD0VXL5g=
+github.com/Shopify/go-lua v0.0.0-20221004153744-91867de107cf/go.mod h1:UCCi6u6YA8oXfJ15vEMiMGIaWWfLiOacinBPHxLXtEU=
 github.com/anthdm/hollywood v0.0.0-20230306194734-bae4cfa6e85d h1:sGxk/lc7L4LkVeFwVhsNddMAL1ogOxHzyy/+0KcVUFc=
 github.com/anthdm/hollywood v0.0.0-20230306194734-bae4cfa6e85d/go.mod h1:0LlRiSP+CEtfHn1P3SqGFHtBsayNGfSzenPKS0nrm3Y=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
