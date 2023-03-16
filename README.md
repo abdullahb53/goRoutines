@@ -1,2 +1,2 @@
-# go practice space
+# GO practice space
 .<br />
