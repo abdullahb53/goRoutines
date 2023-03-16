@@ -1,5 +1,2 @@
-goroutine exercises.
-
-ticker,
-rangechannel,
-queue,
+# Golang Practice Space
+...
