@@ -1,2 +1,2 @@
-# Golang practice space
+# go practice space
 .<br />
