@@ -19,7 +19,7 @@ func JustDoIt(s1 int) {
 func main() {
 
 	// We are guaranteed to work once in the 'Just Do It' function.
-	do.Do(func() { JustDoIt(53) })
+	do.Do(func() { go JustDoIt(53) })
 	fmt.Println("Number:", Number)
 
 	do.Do(func() { JustDoIt(22) })
