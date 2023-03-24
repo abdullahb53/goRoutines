@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"log"
 	"net/http"
-	"time"
 
 	"github.com/anthdm/hollywood/actor"
 	websocket "golang.org/x/net/websocket"
@@ -11,46 +12,107 @@ import (
 
 var engine *actor.Engine
 
-type broadcastMsg struct {
-	pid  *actor.PID
-	data string
+type socketMsg struct {
+	pid *actor.PID
+	ws  *websocket.Conn
+}
+
+type storageSocket struct {
+	storage map[*websocket.Conn]*actor.PID
+}
+
+func newStorageSocket() actor.Receiver {
+	return &storageSocket{
+		storage: make(map[*websocket.Conn]*actor.PID),
+	}
+}
+
+func (f *storageSocket) Receive(ctx *actor.Context) {
+	switch msg := ctx.Message().(type) {
+	case actor.Started:
+		fmt.Println("[WEBSOCKET] storageSocket has started")
+	case *socketMsg:
+
+		fmt.Println("storageSocket has received", msg.ws)
+		f.storage[msg.ws] = msg.pid
+	}
+}
+
+type setWebsocketVal struct {
+	pid *actor.PID
+	ws  *websocket.Conn
 }
 
 type foo struct {
+	ws *websocket.Conn
 }
 
 func newFoo() actor.Receiver {
-	return &foo{}
+	return &foo{
+		ws: &websocket.Conn{},
+	}
 }
 
 func (f *foo) Receive(ctx *actor.Context) {
 	switch msg := ctx.Message().(type) {
 	case actor.Started:
-		fmt.Println("foo has started")
-	case *broadcastMsg:
-		fmt.Println("foo has received", msg.data)
-		engine.Send(msg.pid, msg)
+		fmt.Println("[WEBSOCKET] foo has started")
+
+	case *setWebsocketVal:
+		fmt.Println("foo has received", msg.pid)
+		f.ws = msg.ws
+		engine.Send(storeWSocketPIDs, msg.ws)
+		orws := msg.ws
+		go func(orws *websocket.Conn) {
+
+			buf := make([]byte, 1024)
+			for {
+				n, err := orws.Read(buf)
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+					fmt.Println("read error: ", err)
+					continue
+				}
+				msg := buf[:n]
+				fmt.Println("messageee:", msg)
+
+			}
+
+		}(orws)
 
 	}
 }
 
-func handlerWS(ws *websocket.Conn) {
-	wsConn := ws.RemoteAddr().String()
-	fmt.Println("new incoming connection from client: ", wsConn)
+type pureHandleWS func(ws *websocket.Conn) *actor.PID
 
-	pid := engine.Spawn(newFoo, wsConn)
-	engine.Send(pid, &broadcastMsg{
-		pid:  pid,
-		data: "I'm broadcast message.",
-	})
-
+func HandleFuncImitation(f pureHandleWS) websocket.Handler {
+	return func(c *websocket.Conn) {
+		pid := f(c)
+		fmt.Println("new websocket spawned: ", pid.ID)
+	}
 }
+
+func handlerWS(ws *websocket.Conn) *actor.PID {
+	pid := engine.Spawn(newFoo, ws.RemoteAddr().String())
+	defer engine.Send(pid, &setWebsocketVal{
+		pid: pid,
+		ws:  ws,
+	})
+	return pid
+}
+
+var storeWSocketPIDs *actor.PID
 
 func main() {
 
 	engine = actor.NewEngine()
-	http.Handle("/ws", websocket.Handler(handlerWS))
+	storeWSocketPIDs = engine.Spawn(newStorageSocket, "storer")
 
-	time.Sleep(time.Second * 1000)
+	http.Handle("/ws", websocket.Handler(HandleFuncImitation(handlerWS)))
+	if err := http.ListenAndServe(":3000", nil); err != nil {
+		log.Fatal(err)
+	}
 
 }
