@@ -16,6 +16,7 @@ func NewConn() *Conn {
 	}
 }
 
+// io.Writer's function is overrided here.
 func (c *Conn) Write(p []byte) (int, error) {
 	fmt.Println("writing to underlying connection", string(p))
 	return c.Writer.Write(p)
@@ -35,7 +36,6 @@ func NewServer() *Server {
 	}
 
 	return s
-
 }
 
 func (s *Server) broadcast(msg []byte) error {
