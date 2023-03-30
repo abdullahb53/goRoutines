@@ -1,0 +1,137 @@
+time="2023-03-30T21:49:47+03:00" level=trace msg="[INBOX] started" pid=local/HODOR_STORAGE
+[HODOR] storage has started, id: HODOR_STORAGE
+time="2023-03-30T21:49:47+03:00" level=trace msg="[PROCESS] started" pid=local/HODOR_STORAGE
+ws://127.0.0.1:1688
+time="2023-03-30T21:49:47+03:00" level=trace msg="[INBOX] started" pid=local/179797659
+[WEBSOCKET] foo has started: 179797659
+time="2023-03-30T21:49:47+03:00" level=trace msg="[PROCESS] started" pid=local/179797659
+new goblin-process which is holding incoming websocket is spawned:  179797659
+[HODOR] message has received from: local/HODOR_STORAGE
+PASS
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+message: ws://127.0.0.1:1688:Some text.
+==================
+WARNING: DATA RACE
+Write at 0x00c0000c8050 by goroutine 14:
+  github.com/anthdm/hollywood/examples/websocket.(*websocketGoblin).Receive()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:141 +0x571
+  github.com/anthdm/hollywood/actor.(*process).Invoke()
+      C:/Users/tuba/go/src/hollywood/actor/process.go:98 +0x434
+  github.com/anthdm/hollywood/actor.(*Inbox).Consume()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:30 +0x69
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).Consume()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:135 +0x26b
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).ReadN()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:86 +0x9e
+  github.com/anthdm/hollywood/actor.(*Inbox).Start.func1()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:44 +0x5c
+
+Previous read at 0x00c0000c8050 by goroutine 15:
+  github.com/anthdm/hollywood/examples/websocket.(*websocketGoblin).Receive.func1()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:121 +0x3b7
+  github.com/anthdm/hollywood/examples/websocket.(*websocketGoblin).Receive.func2()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:126 +0x47
+
+Goroutine 14 (running) created at:
+  github.com/anthdm/hollywood/actor.(*Inbox).Start()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:40 +0x144
+  github.com/anthdm/hollywood/actor.newProcess()
+      C:/Users/tuba/go/src/hollywood/actor/process.go:51 +0x538
+  github.com/anthdm/hollywood/actor.(*Engine).Spawn()
+      C:/Users/tuba/go/src/hollywood/actor/engine.go:80 +0x288
+  github.com/anthdm/hollywood/examples/websocket.GenerateProcessForWs()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/handle.go:50 +0x1c4
+  github.com/anthdm/hollywood/examples/websocket.HandleFunc.func1()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/handle.go:28 +0xc1
+  golang.org/x/net/websocket.Server.serveWebSocket()
+      C:/Users/tuba/go/pkg/mod/golang.org/x/net@v0.5.0/websocket/server.go:89 +0x1fd
+  golang.org/x/net/websocket.Handler.ServeHTTP()
+      C:/Users/tuba/go/pkg/mod/golang.org/x/net@v0.5.0/websocket/server.go:112 +0xa5
+  net/http.serverHandler.ServeHTTP()
+      C:/Program Files/Go/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      C:/Program Files/Go/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      C:/Program Files/Go/src/net/http/server.go:3089 +0x58
+
+Goroutine 15 (finished) created at:
+  github.com/anthdm/hollywood/examples/websocket.(*websocketGoblin).Receive()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:93 +0x464
+  github.com/anthdm/hollywood/actor.(*process).Invoke()
+      C:/Users/tuba/go/src/hollywood/actor/process.go:98 +0x434
+  github.com/anthdm/hollywood/actor.(*Inbox).Consume()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:30 +0x69
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).Consume()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:135 +0x26b
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).ReadN()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:86 +0x9e
+  github.com/anthdm/hollywood/actor.(*Inbox).Start.func1()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:44 +0x5c
+==================
+web socket is deleted
+[HODOR] message has received from: local/HODOR_STORAGE
+==================
+WARNING: DATA RACE
+Write at 0x00c0000312f0 by goroutine 8:
+  runtime.mapdelete_fast64()
+      C:/Program Files/Go/src/runtime/map_fast64.go:273 +0x0
+  github.com/anthdm/hollywood/examples/websocket.(*hodorStorage).Receive()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:35 +0x184
+  github.com/anthdm/hollywood/actor.(*process).Invoke()
+      C:/Users/tuba/go/src/hollywood/actor/process.go:98 +0x434
+  github.com/anthdm/hollywood/actor.(*Inbox).Consume()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:30 +0x69
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).Consume()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:135 +0x26b
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).ReadN()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:86 +0x9e
+  github.com/anthdm/hollywood/actor.(*Inbox).Start.func1()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:44 +0x5c
+
+Previous read at 0x00c0000312f0 by goroutine 25:
+  runtime.mapiternext()
+      C:/Program Files/Go/src/runtime/map.go:866 +0x0
+  github.com/anthdm/hollywood/examples/websocket.(*hodorStorage).Receive.func1()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:58 +0xe4
+  github.com/anthdm/hollywood/examples/websocket.(*hodorStorage).Receive.func2()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:63 +0x47
+
+Goroutine 8 (running) created at:
+  github.com/anthdm/hollywood/actor.(*Inbox).Start()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:40 +0x144
+  github.com/anthdm/hollywood/actor.newProcess()
+      C:/Users/tuba/go/src/hollywood/actor/process.go:51 +0x538
+  github.com/anthdm/hollywood/actor.(*Engine).Spawn()
+      C:/Users/tuba/go/src/hollywood/actor/engine.go:80 +0x288
+  github.com/anthdm/hollywood/examples/websocket.TestHandleWebsocket()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main_test.go:16 +0xbe
+  testing.tRunner()
+      C:/Program Files/Go/src/testing/testing.go:1576 +0x216
+  testing.(*T).Run.func1()
+      C:/Program Files/Go/src/testing/testing.go:1629 +0x47
+
+Goroutine 25 (finished) created at:
+  github.com/anthdm/hollywood/examples/websocket.(*hodorStorage).Receive()
+      C:/Users/tuba/go/src/hollywood/examples/websocket/main.go:57 +0x356
+  github.com/anthdm/hollywood/actor.(*process).Invoke()
+      C:/Users/tuba/go/src/hollywood/actor/process.go:98 +0x434
+  github.com/anthdm/hollywood/actor.(*Inbox).Consume()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:30 +0x69
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).Consume()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:135 +0x26b
+  github.com/anthdm/hollywood/ggq.(*GGQ[...]).ReadN()
+      C:/Users/tuba/go/src/hollywood/ggq/ggq.go:86 +0x9e
+  github.com/anthdm/hollywood/actor.(*Inbox).Start.func1()
+      C:/Users/tuba/go/src/hollywood/actor/inbox.go:44 +0x5c
+==================
+Found 2 data race(s)
+FAIL    github.com/anthdm/hollywood/examples/websocket  1.380s
+FAIL
