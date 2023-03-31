@@ -26,29 +26,39 @@ func (f *hodorStorage) Receive(ctx *actor.Context) {
 	//----------------------------
 	//-----CAUSES RACE COND.------
 	//----------------------------
-	case *letterToHodor:
-		fmt.Println("[HODOR] message has received from:", ctx.PID())
+	// case *letterToHodor:
+	// 	fmt.Println("[HODOR] message has received from:", ctx.PID())
 
-		// Delete the incoming websocket value -
-		// or add a new websocket and goblin-process_id pair.
-		if msg.drop {
-			delete(f.storage, msg.ws)
-		} else {
-			f.storage[msg.ws] = msg.pid
+	// Delete the incoming websocket value.
+	case *deleteFromHodor:
+
+		msg.deleteWsCh <- msg.ws
+		go func(f *hodorStorage, msg *deleteFromHodor) {
+			for wsocket := range msg.deleteWsCh {
+				delete(f.storage, wsocket)
+				close(msg.deleteWsCh)
+				break
+			}
+		}(f, msg)
+
+	// Add a new websocket and goblin-process pair.
+	case *addToHodor:
+
+		newMap := make(map[*websocket.Conn]*actor.PID)
+		newMap[msg.ws] = msg.pid
+		msg.addWsCh <- addToHodor{
+			ws:  msg.ws,
+			pid: msg.pid,
 		}
 
-	//------------------------------
-	// RACE-COND. IS SOLVED IN HERE.
-	//------------------------------
-	//
-	// // Delete the incoming websocket value.
-	// case *deleteFromHodor:
-	// 	delete(f.storage, msg.ws)
-
-	// // Add a new websocket and goblin-process pair.
-	// case addToHodor:
-	// 	f.storage[msg.ws] = msg.pid
-	//
+		go func(f *hodorStorage, msg *addToHodor) {
+		breakthere:
+			for wsMap := range msg.addWsCh {
+				f.storage[wsMap.ws] = wsMap.pid
+				close(msg.addWsCh)
+				break breakthere
+			}
+		}(f, msg)
 	//-----------------------------
 	// RACE-COND. IS SOLVED IN HERE.
 	//-----------------------------
@@ -82,10 +92,10 @@ func (f *websocketGoblin) Receive(ctx *actor.Context) {
 		f.quitCh = msg.quitCh
 
 		// Add websocket and corresponding goblin-processId pair to hodor-storage.
-		engine.Send(hodorProcessId, &letterToHodor{
-			pid:  ctx.PID(),
-			ws:   f.ws,
-			drop: false,
+		engine.Send(hodorProcessId, &addToHodor{
+			ws:      msg.ws,
+			pid:     ctx.PID(),
+			addWsCh: make(chan addToHodor),
 		})
 
 		ourWs := msg.ws
@@ -144,10 +154,9 @@ func (f *websocketGoblin) Receive(ctx *actor.Context) {
 		*f.quitCh <- struct{}{}
 
 		// Delete the websocket and goblin-process pair in the hodor-storage.
-		engine.Send(hodorProcessId, &letterToHodor{
-			pid:  hodorProcessId,
-			ws:   f.ws,
-			drop: true,
+		engine.Send(hodorProcessId, &deleteFromHodor{
+			ws:         msg.ws,
+			deleteWsCh: make(chan *websocket.Conn),
 		})
 
 		// Poison the goblin-process.
