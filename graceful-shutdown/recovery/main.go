@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 )
 
 const SUPERVISOR supervisor = "SUPERVISOR"
 
 type region struct {
+	muHms  *sync.RWMutex
 	humans *[]human
 }
 
@@ -23,15 +25,22 @@ func newHuman(name string, age int) *human {
 		age:  age,
 	}
 }
+
 func newRegion() *region {
 	return &region{
-		humans: new([]human),
+		muHms:  &sync.RWMutex{},
+		humans: &[]human{*newHuman("Abdullah", 27)},
 	}
 }
 
 func (r *region) addHuman(name string, age int) {
+	// This solution is temporary. I'll change this.
+	// TODO: Solve race-condition without mutexes.
+	// Channel maybe or another way.. Search it.
+	r.muHms.Lock()
 	a := newHuman(name, age)
 	(*r.humans) = append((*r.humans), (*a))
+	r.muHms.Unlock()
 }
 
 func (r *region) showHumans() {
@@ -49,11 +58,16 @@ func Actor(ctx context.Context) {
 	}()
 
 	for {
-		reg := ctx.Value(SUPERVISOR).(*region)
-		reg.showHumans()
+		// Casting.
+		switch reg := ctx.Value(SUPERVISOR).(type) {
+		case *region:
+			reg.showHumans()
+		default:
+			_ = reg
+		}
+
 		time.Sleep(time.Second * 2)
 		panic(">>")
-
 	}
 }
 
@@ -61,21 +75,21 @@ type supervisor string
 
 func main() {
 
-	reg := newRegion()
-	ctx := context.WithValue(context.Background(), SUPERVISOR, reg)
+	// reg := newRegion()
+	// ctx := context.WithValue(context.Background(), SUPERVISOR, reg)
 
-	go Actor(ctx)
+	// go Actor(ctx)
 
-	go func(ctx context.Context) {
-		reg := ctx.Value(SUPERVISOR).(*region)
-		reg.addHuman("Anthony", 30)
-		time.Sleep(time.Second * 3)
-		reg.addHuman("Invoker", 33)
-		time.Sleep(time.Second * 3)
-		reg.addHuman("Dede", 55)
-		time.Sleep(time.Second * 3)
-		reg.addHuman("Kezban", 11)
-	}(ctx)
+	// go func(ctx context.Context) {
+	// 	reg := ctx.Value(SUPERVISOR).(*region)
+	// 	reg.addHuman("Anthony", 30)
+	// 	time.Sleep(time.Second * 3)
+	// 	reg.addHuman("Invoker", 33)
+	// 	time.Sleep(time.Second * 3)
+	// 	reg.addHuman("Dede", 55)
+	// 	time.Sleep(time.Second * 3)
+	// 	reg.addHuman("Kezban", 11)
+	// }(ctx)
 
-	select {}
+	// select {}
 }
