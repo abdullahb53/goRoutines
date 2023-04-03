@@ -1,30 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/zeebo/assert"
 )
 
 func TestRingBitWise(t *testing.T) {
 
-	size := 64
-	bufferMask := 63
+	// There is an incoming data.
+	incomingBuf := make([]int, 16)
+	fibonacciFill(&incomingBuf)
 
-	bufOne := newRingBuf(size)
-	bufOne.bufFill()
+	// Our smart stack buffer. :size[8]
+	ringBuff := newRingBuff()
+	ringBuff.bufFill()
 
-	masked := 63 & bufferMask
-	fmt.Printf("binary:%b normal:%v\n", masked, masked)
-	fmt.Printf("~buf: %v\n", bufOne.buffer[masked])
+	// Put the incoming data into the ringBuffer.
+	// Concurrent!
+	go ringBuff.put(incomingBuf)
 
-	assert.Equal(t, masked, bufOne.buffer[63])
+	// Read a stack buffer with the buffer size.
+	res := ringBuff.read(len(incomingBuf))
 
-	masked = 64 & bufferMask
-	fmt.Printf("binary:%b normal:%v\n", masked, masked)
-	fmt.Printf("~buf: %v\n", bufOne.buffer[masked])
+	assert.Equal(t, len(incomingBuf), len(res))
 
-	assert.Equal(t, masked, bufOne.buffer[0])
+	for i := 0; i < len(res); i++ {
+		assert.Equal(t, res[i], incomingBuf[len(res)-i-1])
+	}
 
 }
