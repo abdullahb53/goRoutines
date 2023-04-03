@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/consul/api v1.20.0
 	github.com/rabbitmq/amqp091-go v1.7.0
+	github.com/zeebo/assert v1.3.0
 	golang.org/x/net v0.8.0
 )
 
@@ -42,6 +43,6 @@ require (
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 	google.golang.org/grpc v1.53.0 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	google.golang.org/protobuf v1.28.1
 	storj.io/drpc v0.0.32 // indirect
 )
