@@ -8,7 +8,6 @@ func do(b []int) {
 }
 
 func main() {
-
 	var b = []int{4, 5, 6}
 	fmt.Println(b)
 	do(b)
