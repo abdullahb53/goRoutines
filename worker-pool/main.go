@@ -1,38 +1,37 @@
 package main
 
-const WORKERsize = 256
-
 type Pool struct {
-	Work chan func()
-	Cls  chan struct{}
+	work chan func()
+	cls  chan struct{}
 }
 
 func NewPool(size int) *Pool {
 	return &Pool{
-		Work: make(chan func()),
-		Cls:  make(chan struct{}, size),
-	}
-}
-
-func (p *Pool) worker(task func()) {
-	defer func() {
-		<-p.Cls
-	}()
-	for {
-		task()
-		task = <-p.Work
+		work: make(chan func()),
+		cls:  make(chan struct{}, size),
 	}
 }
 
 func (p *Pool) Schedule(task func()) {
 	select {
-	case p.Work <- task:
-	case p.Cls <- struct{}{}:
-		go p.worker(task)
+	case p.work <- task:
+	case p.cls <- struct{}{}:
+		go p.Worker(task)
+	}
+}
+
+func (p *Pool) Worker(task func()) {
+	defer func() { <-p.cls }()
+	for {
+		task()
+		task = <-p.work
 	}
 }
 
 func main() {
-	_ = NewPool(WORKERsize)
-
+	size := 32
+	pool := NewPool(size)
+	for i := 0; i < size; i++ {
+		pool.Schedule(func() {})
+	}
 }
